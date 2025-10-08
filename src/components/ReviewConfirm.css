@@ -1,0 +1,307 @@
+/* ReviewConfirm.css
+   Styles for the Review & Confirm card layout and document previews.
+   Tweak variables/colors to match your theme.
+*/
+
+:root {
+  --bg: #ffffff;
+  --card-bg: #fbfdff;
+  --muted: #9aa6b2;
+  --text: #0f1724;
+  --accent: #2563eb;
+}
+
+/* Wrapper */
+.rc-wrapper {
+  padding: 20px;
+  margin-left: 50px;
+  margin-right: 50px;
+  background: transparent;
+  font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Header */
+.rc-header h2 {
+  margin: 0 0 18px 0;
+  font-size: 20px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Cards container */
+.rc-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* Individual card */
+.rc-card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(15,23,36,0.04);
+  box-shadow: 0 6px 18px rgba(19, 40, 57, 0.03);
+}
+
+/* Titles inside card */
+.rc-card-title {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rc-icon {
+  width: 20px;
+  height: 20px;
+  color: #f7b500; /* icon color for left section */
+}
+
+/* Card body dl styling */
+.rc-card-body dl {
+  margin: 0;
+}
+
+.rc-card-body dl dt {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.rc-card-body dl dd {
+  margin: 6px 0 12px 0;
+  font-size: 15px;
+  color: var(--text);
+}
+
+/* Emphasis text */
+.rc-emph {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 16px;
+}
+
+/* Muted small text */
+.rc-muted {
+  color: var(--muted);
+}
+
+/* Badges */
+.rc-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 18px;
+  font-weight: 600;
+  font-size: 13px;
+  background: #f1f6fb;
+  color: #374151;
+}
+
+.rc-badge--high { background: #fee2e2; color: #991b1b; }
+.rc-badge--normal { background: #f1f6fb; color: #374151; }
+.rc-badge--low { background: #eefaf1; color: #116530; }
+
+/* Divider */
+.rc-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(14,23,30,0.02), rgba(14,23,30,0.03));
+  margin: 18px 0;
+}
+
+/* Actions */
+.rc-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.rc-btn {
+  min-width: 120px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.rc-btn--secondary {
+  background: #fff;
+  border: 1px solid rgba(15,23,36,0.06);
+  color: var(--text);
+}
+
+.rc-btn--primary {
+  background: #bf8d03d7;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(37,99,235,0.08);
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rc-check {
+  width: 18px;
+  height: 18px;
+}
+
+/* Documents + ID two-column layout */
+.rc-docs {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Previews area for Front / Back */
+.rc-doc-previews {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+}
+
+/* Each individual document preview */
+.rc-doc-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 100px;
+}
+
+/* "Front" / "Back" label */
+.rc-doc-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Thumbnail image style */
+.rc-doc-img {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(14, 30, 37, 0.06);
+  box-shadow: 0 2px 6px rgba(15, 23, 36, 0.05);
+  transition: transform 0.15s ease;
+}
+
+.rc-doc-img:hover {
+  transform: scale(1.05);
+}
+
+/* Placeholder when no document image */
+.rc-doc-placeholder {
+  width: 100px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7f9;
+  color: #a8b1b7;
+  border: 1px dashed #d0d6db;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* Right-hand ID info column */
+.rc-id-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+}
+
+/* Each label-value row */
+.rc-id-row {
+  display: flex;
+  flex-direction: column;
+}
+
+/* small muted label */
+.rc-id-label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* value (bold) */
+.rc-id-value {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 15px;
+}
+
+/* Responsive: stack cards on small screens */
+@media (max-width: 920px) {
+  .rc-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive: stack docs area on narrow screens */
+@media (max-width: 740px) {
+  .rc-docs {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .rc-doc-previews {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .rc-id-block {
+    min-width: 0;
+  }
+}
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 36, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal {
+  background: white;
+  border-radius: 10px;
+  padding: 28px 36px;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.modal h3 {
+  margin-bottom: 12px;
+  color: #afb504;
+}
+
+.modal p {
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+.modal button {
+  margin-top: 18px;
+  background: #afb504;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 50px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modal button:hover {
+  background: #acb113;
+}

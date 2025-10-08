@@ -1,0 +1,253 @@
+/* DocumentUpload.css */
+.document-upload-container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 30px 40px;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #c7a047;
+}
+
+
+.document-upload-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.document-upload-header h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #c7a047;
+}
+
+.document-upload-header p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.upload-sections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.upload-section {
+  margin-bottom: 20px;
+}
+
+.dotted-box {
+  border: 2px dashed #c7a047;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 25px;
+  min-height: 220px; /* Decreased from 300px */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.upload-interface, .file-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.upload-icon {
+  margin-bottom: 15px;
+}
+
+.upload-interface h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+}
+
+.section-description {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.file-upload-area {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.file-upload-area input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.choose-file-button {
+  padding: 10px 20px;
+  border: 2px solid #c7a047;
+  border-radius: 6px;
+  background-color: white;
+  color: #c7a047;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-block;
+}
+
+.choose-file-button:hover {
+  background-color: #c7a047;
+  color: white;
+}
+
+.upload-subtext {
+  font-size: 14px;
+  color: #666;
+}
+
+.file-info {
+  margin-bottom: 20px;
+}
+
+.file-info h4 {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #333;
+  word-break: break-all;
+}
+
+.file-info p {
+  color: #666;
+  font-size: 14px;
+}
+
+.remove-button {
+  padding: 10px 20px;
+  border: 2px solid #c7a047;
+  border-radius: 6px;
+  background-color: white;
+  color: #c7a047;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.remove-button:hover {
+  background-color: #c7a047;
+  color: white;
+}
+
+.requirements-section {
+  border-radius: 6px;
+  padding: 0;
+  margin-bottom: 25px;
+  border-left: none;
+  background-color: #fffcf4;
+}
+
+.requirements-section h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 600;
+}
+
+.requirements-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.requirements-section li {
+  margin-bottom: 8px;
+  color: #666;
+  font-size: 14px;
+}
+.error-message {
+  color: #d9534f;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.back-button, .continue-button {
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.back-button {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ccc;
+  min-width: 120px;
+}
+
+.back-button:hover:not(:disabled) {
+  background-color: #e2e6ea;
+}
+
+/* .continue-button {
+  background-color: #c7a047;
+  color: white;
+  border: none;
+  min-width: 200px;
+}
+
+.continue-button:hover:not(:disabled) {
+  background-color: #b08d3f;
+} */
+
+
+.continue-button {
+  padding: 10px 20px;
+  border: 2px solid #c7a047;
+  border-radius: 6px;
+  background-color: white;
+  color: #c7a047;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.continue-button:hover:not(:disabled) {
+  background-color: #c7a047;
+  color: white;
+}
+
+
+.back-button:disabled, .continue-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (min-width: 768px) {
+  .upload-sections {
+    grid-template-columns: 1fr 1fr;
+  }
+}

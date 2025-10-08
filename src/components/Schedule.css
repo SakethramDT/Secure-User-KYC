@@ -1,0 +1,246 @@
+/* Schedule.css
+   Styles for Schedule.js: card layout, date input, slot grid, buttons
+*/
+
+/* color system (tweak these to match your brand) */
+:root{
+  --bg: #ffffff;
+  --card-bg: #fbfdff;
+  --muted: #9aa6b2;
+  --text: #0f1724;
+  --accent:linear-gradient(135deg, #d4af37, #b8860b);       
+  --accent-contrast: #ffffff;
+  --slot-border: #e6edf3;
+  --slot-bg: #ffffff;
+  --slot-disabled: #f5f7f9;
+  --slot-disabled-text: #a8b1b7;
+  --slot-active-bg: #0f1724; /* near black for active slot in screenshot */
+  --slot-active-text: #ffffff;
+  --card-shadow: 0 6px 18px rgba(19, 40, 57, 0.04);
+  --radius: 10px;
+  --small-radius: 8px;
+  --muted-2: #eef3f6;
+}
+
+/* Card container */
+.card.schedule-officer {
+  background: linear-gradient(180deg, var(--card-bg), #fff);
+  border-radius: 14px;
+  padding: 45px;
+  margin-left:90px;
+  margin-right: 90px;
+  margin-bottom: 30px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(15,23,36,0.04);
+  color: var(--text);
+  font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Title + subtitle */
+.card.schedule-officer h3 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0b1320;
+}
+
+.card.schedule-officer .subtitle {
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* form-grid: 3 columns (left form, middle blank/selected, right slots) */
+/* The screenshot uses a large left area + slots on right; adapt with grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+/* small rows inside grid */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* label */
+.label {
+  font-size: 13px;
+  color: #344055;
+  font-weight: 500;
+}
+
+/* date input style */
+.date {
+  height: 44px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--slot-border);
+  background: #fff;
+  font-size: 14px;
+  outline: none;
+  box-shadow: none;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+
+.date:focus {
+  border-color: rgba(37,99,235,0.85);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.08);
+}
+
+/* readonly selected time input */
+.input {
+  height: 44px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--slot-border);
+  background: #fff;
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* buttons */
+.btn {
+  height: 40px;
+  min-width: 84px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  transition: transform .06s ease, box-shadow .06s ease, background-color .08s;
+}
+
+.btn.secondary {
+  background: #fff;
+  color: #0f1724;
+  border: 1px solid rgba(15,23,36,0.06);
+}
+
+.btn.secondary:active { transform: translateY(1px); }
+
+.btn.primary {
+  background: linear-gradient(135deg, #d4af37, #b8860b);   
+  color: var(--accent-contrast);
+  border: 1px solid rgba(37,99,235,0.12);
+  box-shadow: 0 8px 18px rgba(37,99,235,0.08);
+}
+
+.btn[disabled], .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* error message */
+.error-message {
+  margin-top: 8px;
+  background: rgba(255, 105, 97, 0.06);
+  color: #b42318;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* slots area */
+.slots {
+  grid-column: 2 / span 2; /* occupy middle+right columns to mirror screenshot */
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+/* The screenshot shows time buttons aligned in a column cluster; let's make them uniform buttons */
+.slot {
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid var(--slot-border);
+  background: var(--slot-bg);
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color .08s ease, color .08s ease, transform .06s ease;
+  box-shadow: none;
+}
+
+.slot:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15,23,36,0.05);
+}
+
+.slot.disabled,
+.slot[disabled] {
+  background: var(--slot-disabled);
+  color: var(--slot-disabled-text);
+  border-color: rgba(14, 30, 37, 0.03);
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+/* active selection */
+.slot.active,
+.slot[aria-pressed="true"] {
+  background: var(--slot-active-bg);
+  color: var(--slot-active-text);
+  border-color: rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(12, 18, 24, 0.18);
+}
+
+/* spacing tweaks */
+.form-grid .form-row:last-child { align-self: end; }
+
+/* small-screen responsiveness */
+@media (max-width: 920px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .slots {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .slot {
+    height: 44px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .slots {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* subtle divider line above nav area (to match screenshot) */
+.card.schedule-officer::after {
+  content: "";
+  display: block;
+  height: 1px;
+  width: calc(100% + 44px);
+  margin: 18px -22px 0 -22px;
+  background: linear-gradient(90deg, rgba(14,23,30,0.02), rgba(14,23,30,0.03));
+}
+
+/* small helper for tip text */
+.card.schedule-officer .tip {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+

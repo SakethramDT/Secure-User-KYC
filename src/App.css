@@ -1,0 +1,234 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ScheduleOfficer.css */
+.schedule-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 2px solid #e6d9b8;
+  box-shadow: 0 8px 20px rgba(24, 24, 24, 0.06);
+  padding: 28px;
+  margin-top: 20px;
+}
+
+.schedule-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #1a1a1a;
+}
+
+.schedule-card .subtitle {
+  color: #6b6b6b;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.schedule-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.schedule-form label {
+  font-size: 13px;
+  color: #6b6b6b;
+  margin-bottom: 6px;
+}
+
+.schedule-form input {
+  height: 44px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e6e2dc;
+  font-size: 14px;
+}
+
+.schedule-form input:focus {
+  border-color: #d4a92a;
+  box-shadow: 0 4px 10px rgba(210, 162, 44, 0.15);
+  outline: none;
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.slot {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e6e2dc;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.slot:hover:not(.disabled) {
+  border-color: #d4a92a;
+}
+
+.slot.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.slot.active {
+  background: linear-gradient(90deg, #e6bb42, #d4a92a);
+  color: #fff;
+  border-color: #d4a92a;
+  box-shadow: 0 6px 14px rgba(198, 150, 40, 0.12);
+}
+
+.schedule-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn {
+  min-width: 120px;
+  height: 44px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.btn.primary {
+  background: linear-gradient(90deg, #e6bb42, #d4a92a);
+  color: #fff;
+}
+
+.btn.secondary {
+  background: transparent;
+  border: 1px solid #e6e2dc;
+  color: #6b6b6b;
+}
+
+.btn.primary:hover {
+  box-shadow: 0 8px 18px rgba(198, 150, 40, 0.18);
+}
+
+/* ReviewConfirm.css */
+.review-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 2px solid #e6d9b8;
+  box-shadow: 0 8px 20px rgba(24, 24, 24, 0.06);
+  padding: 28px;
+  margin-top: 20px;
+}
+
+.review-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.review-card .subtitle {
+  color: #6b6b6b;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.json-preview {
+  background: #fafafa;
+  border: 1px solid #e6e2dc;
+  border-radius: 8px;
+  padding: 14px;
+  max-height: 260px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  font-size: 13px;
+  color: #333;
+}
+
+.review-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn {
+  min-width: 120px;
+  height: 44px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.btn.primary {
+  background: linear-gradient(90deg, #e6bb42, #d4a92a);
+  color: #fff;
+}
+
+.btn.secondary {
+  background: transparent;
+  border: 1px solid #e6e2dc;
+  color: #6b6b6b;
+}
+
+.success-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #eef8ee;
+  color: #1f8a3b;
+  border: 1px solid rgba(31, 138, 59, 0.12);
+}
+
+.error-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff5f5;
+  color: #d43d3d;
+  border: 1px solid rgba(212, 61, 61, 0.08);
+}
