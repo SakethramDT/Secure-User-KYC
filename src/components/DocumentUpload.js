@@ -2,6 +2,36 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./DocumentUpload.css";
 
+const STORAGE_KEY = "kyc_formdata";
+
+/** strip large fields before storing in localStorage */
+const makeSafeDraft = (obj = {}) => {
+  const copy = { ...(obj || {}) };
+  delete copy.document_front;
+  delete copy.document_back;
+  delete copy.document_front_base64;
+  delete copy.document_back_base64;
+  if (Array.isArray(copy.documents)) {
+    copy.documents = copy.documents.map((d) => {
+      if (!d || typeof d !== "object") return d;
+      const shallow = { ...d };
+      if (shallow.base64) delete shallow.base64;
+      return shallow;
+    });
+  }
+  return copy;
+};
+
+const safeSetLocalStorage = (key, obj) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(makeSafeDraft(obj)));
+    return true;
+  } catch (e) {
+    console.warn("localStorage persist failed (ignored):", e);
+    return false;
+  }
+};
+
 const DocumentUpload = ({ formData = {}, setFormData, onNext, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -29,7 +59,12 @@ const DocumentUpload = ({ formData = {}, setFormData, onNext, onBack }) => {
     if (!file) return;
     setError(null);
     if (typeof setFormData === "function") {
-      setFormData((prev) => ({ ...(prev || {}), [field]: file }));
+      setFormData((prev) => {
+        const updated = { ...(prev || {}), [field]: file };
+        // persist a safe draft (exclude actual File object and base64)
+        safeSetLocalStorage(STORAGE_KEY, updated);
+        return updated;
+      });
     }
   };
 
@@ -47,7 +82,7 @@ const DocumentUpload = ({ formData = {}, setFormData, onNext, onBack }) => {
           delete updated.document_back_base64;
           if (Array.isArray(updated.documents)) updated.documents = updated.documents.filter(d => d.type !== "back");
         }
-        try { localStorage.setItem("kyc_formdata", JSON.stringify(updated)); } catch (e) {}
+        safeSetLocalStorage(STORAGE_KEY, updated);
         return updated;
       });
     }
@@ -106,9 +141,9 @@ const DocumentUpload = ({ formData = {}, setFormData, onNext, onBack }) => {
       if (frontBase64) updated.document_front_base64 = frontBase64;
       if (backBase64) updated.document_back_base64 = backBase64;
 
-      // persist merged state to parent and localStorage
+      // persist merged state to parent and localStorage (but store a safe draft)
       if (typeof setFormData === "function") setFormData(updated);
-      try { localStorage.setItem("kyc_formdata", JSON.stringify(updated)); } catch (e) { /* ignore */ }
+      safeSetLocalStorage(STORAGE_KEY, updated);
 
       // IMPORTANT: We intentionally DO NOT call /api/users here.
       // Final persistence will happen in /api/book on "Schedule".

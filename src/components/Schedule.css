@@ -1,5 +1,6 @@
 /* Schedule.css
-   Styles for Schedule.js: card layout, date input, slot grid, buttons
+   Updated styles for Schedule.js
+   NOTE: kept your original color variables unchanged
 */
 
 /* color system (tweak these to match your brand) */
@@ -14,7 +15,7 @@
   --slot-bg: #ffffff;
   --slot-disabled: #f5f7f9;
   --slot-disabled-text: #a8b1b7;
-  --slot-active-bg: #0f1724; /* near black for active slot in screenshot */
+  --slot-active-bg: #0f1724; /* near black for active slot */
   --slot-active-text: #ffffff;
   --card-shadow: 0 6px 18px rgba(19, 40, 57, 0.04);
   --radius: 10px;
@@ -26,14 +27,15 @@
 .card.schedule-officer {
   background: linear-gradient(180deg, var(--card-bg), #fff);
   border-radius: 14px;
-  padding: 45px;
-  margin-left:90px;
+  padding: 40px;
+  margin-left: 90px;
   margin-right: 90px;
   margin-bottom: 30px;
   box-shadow: var(--card-shadow);
   border: 1px solid rgba(15,23,36,0.04);
   color: var(--text);
   font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
 }
 
 /* Title + subtitle */
@@ -50,8 +52,7 @@
   font-size: 13px;
 }
 
-/* form-grid: 3 columns (left form, middle blank/selected, right slots) */
-/* The screenshot uses a large left area + slots on right; adapt with grid */
+/* form-grid: 3 columns */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -127,7 +128,7 @@
 .btn.secondary:active { transform: translateY(1px); }
 
 .btn.primary {
-  background: linear-gradient(135deg, #d4af37, #b8860b);   
+  background: linear-gradient(135deg, #d4af37, #b8860b);
   color: var(--accent-contrast);
   border: 1px solid rgba(37,99,235,0.12);
   box-shadow: 0 8px 18px rgba(37,99,235,0.08);
@@ -150,37 +151,119 @@
   font-size: 13px;
 }
 
-/* slots area */
-.slots {
-  grid-column: 2 / span 2; /* occupy middle+right columns to mirror screenshot */
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
-  align-items: start;
+/* DATES: pill-like date blocks (enhanced) */
+/* place date pills above slots or wherever you render them */
+.date-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  margin-bottom: 6px;
 }
 
-/* The screenshot shows time buttons aligned in a column cluster; let's make them uniform buttons */
+/* date pill */
+.date-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 98px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid rgba(15,23,36,0.04);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+  user-select: none;
+  text-align: center;
+}
+
+/* pill text parts */
+.date-pill .pill-weekday {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.date-pill .pill-date {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* hover / focus */
+.date-pill:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(15,23,36,0.06);
+  border-color: rgba(15,23,36,0.06);
+}
+.date-pill:focus {
+  outline: 3px solid rgba(37,99,235,0.12);
+  outline-offset: 2px;
+}
+
+/* active pill */
+.date-pill.active {
+  transform: translateY(-6px);
+ /* box-shadow: 0 14px 32px rgba(15,23,36,0.08); */
+  /* border-color: rgba(37,99,235,0.12); */
+  background: linear-gradient(180deg, rgba(250,250,250,0.98), #fff);
+}
+
+/* slots area - keep original grid-column behaviour but make grid responsive */
+.slots {
+  grid-column: 2 / span 2; /* keep your original column span */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  align-items: start;
+  margin-top: 10px;
+}
+
+/* slot button: convert into card with time + seats below */
 .slot {
-  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: auto;
+  min-height: 64px;
+  padding: 12px;
   border-radius: 10px;
   border: 1px solid var(--slot-border);
   background: var(--slot-bg);
-  padding: 0 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  color: var(--text);
   cursor: pointer;
-  transition: background-color .08s ease, color .08s ease, transform .06s ease;
-  box-shadow: none;
+  transition: transform .08s ease, box-shadow .08s ease, border-color .08s ease;
+  text-align: center;
+  color: var(--text);
+  font-weight: 700;
 }
 
+/* time label (prominent) */
+.slot .slot-time {
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: -0.2px;
+}
+
+/* seats label below the time */
+.slot .slot-seats {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--muted-2);
+  padding: 5px 8px;
+  border-radius: 999px;
+  min-width: 72px;
+}
+
+/* hover */
 .slot:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(15,23,36,0.05);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(15,23,36,0.06);
+  border-color: rgba(15,23,36,0.06);
 }
 
+/* disabled slot */
 .slot.disabled,
 .slot[disabled] {
   background: var(--slot-disabled);
@@ -191,7 +274,7 @@
   box-shadow: none;
 }
 
-/* active selection */
+/* active selected slot */
 .slot.active,
 .slot[aria-pressed="true"] {
   background: var(--slot-active-bg);
@@ -200,34 +283,29 @@
   box-shadow: 0 8px 24px rgba(12, 18, 24, 0.18);
 }
 
+/* if active, ensure seats pill is readable */
+.slot.active .slot-seats {
+  background: rgba(255,255,255,0.08);
+  color: var(--slot-active-text);
+  border: none;
+}
+
 /* spacing tweaks */
 .form-grid .form-row:last-child { align-self: end; }
 
-/* small-screen responsiveness */
+/* responsive tweaks */
 @media (max-width: 920px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .slots {
-    grid-column: 1 / -1;
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .slot {
-    height: 44px;
-    font-size: 14px;
-  }
+  .form-grid { grid-template-columns: 1fr; padding: 0 12px; }
+  .slots { grid-column: 1 / -1; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .card.schedule-officer { margin-left: 18px; margin-right: 18px; padding: 22px; }
 }
 
 @media (max-width: 520px) {
-  .slots {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
+  .slots { grid-template-columns: 1fr; gap: 10px; }
+  .date-pill { min-width: 72px; padding: 8px; }
 }
 
-/* subtle divider line above nav area (to match screenshot) */
+/* subtle divider line above nav area */
 .card.schedule-officer::after {
   content: "";
   display: block;
@@ -243,4 +321,8 @@
   font-size: 13px;
 }
 
-
+/* focus a11y for slot and pills */
+.date-pill:focus, .slot:focus, .btn:focus {
+  outline: 3px solid rgba(37,99,235,0.12);
+  outline-offset: 3px;
+}

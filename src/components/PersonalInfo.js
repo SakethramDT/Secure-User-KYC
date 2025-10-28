@@ -33,20 +33,61 @@ const REQUIRED_FIELDS = [
   "id_expiry_date",
 ];
 
+const STORAGE_KEY = "kyc_formdata";
+
+/** Utility: strip large fields before saving to localStorage */
+const makeSafeDraft = (obj = {}) => {
+  const copy = { ...(obj || {}) };
+  // remove file objects and base64 blobs
+  delete copy.document_front;
+  delete copy.document_back;
+  delete copy.document_front_base64;
+  delete copy.document_back_base64;
+
+  if (Array.isArray(copy.documents)) {
+    copy.documents = copy.documents.map((d) => {
+      if (!d || typeof d !== "object") return d;
+      const shallow = { ...d };
+      // remove any base64 payloads
+      if (shallow.base64) delete shallow.base64;
+      return shallow;
+    });
+  }
+
+  return copy;
+};
+
+const safeSetLocalStorage = (key, obj) => {
+  try {
+    const safe = makeSafeDraft(obj);
+    localStorage.setItem(key, JSON.stringify(safe));
+    return true;
+  } catch (err) {
+    // QuotaExceededError or other storage issues - don't crash the app
+    console.warn("Failed to persist draft to localStorage", err);
+    return false;
+  }
+};
+
 const PersonalInfo = ({ formData, setFormData, onNext, username }) => {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     if (!formData || Object.keys(formData).length === 0) {
-      const savedData = localStorage.getItem("kycFormData");
+      const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
-        setFormData(JSON.parse(savedData));
+        try {
+          setFormData(JSON.parse(savedData));
+        } catch (e) {
+          // ignore parse error
+        }
       } else if (username) {
         setFormData((prev) => ({ ...prev, username }));
       }
     }
-  }, [username, setFormData, formData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [username]);
 
   const clearFieldError = (name) => {
     setErrors((prev) => {
@@ -62,10 +103,8 @@ const PersonalInfo = ({ formData, setFormData, onNext, username }) => {
 
     setFormData((prev) => {
       const updated = { ...prev, [name]: value };
-      const personalInfo = { ...updated };
-      delete personalInfo.document_front;
-      delete personalInfo.document_back;
-      localStorage.setItem("kycFormData", JSON.stringify(personalInfo));
+      // Persist only the safe draft (no files/base64)
+      safeSetLocalStorage(STORAGE_KEY, updated);
       return updated;
     });
 
@@ -122,14 +161,6 @@ const PersonalInfo = ({ formData, setFormData, onNext, username }) => {
       const expiryDate = new Date(formData.id_expiry_date);
       if (!isNaN(expiryDate) && expiryDate <= today) {
         newErrors.id_expiry_date = "Expiry Date must be after today";
-      }
-    }
-
-    if (formData.id_issue_date && formData.id_expiry_date) {
-      const issueDate = new Date(formData.id_issue_date);
-      const expiryDate = new Date(formData.id_expiry_date);
-      if (!isNaN(issueDate) && !isNaN(expiryDate) && issueDate >= expiryDate) {
-        newErrors.id_issue_date = "Issue Date must be before Expiry Date";
       }
     }
 

@@ -15,7 +15,7 @@ import "./ReviewConfirm.css";
  *  - prefer server-authoritative values if set in formData (e.g. after booking),
  *  - fall back to localStorage draft 'kyc_formdata' if images are missing,
  *  - display images stored as data URIs (base64),
- *  - build payload including user fields and documents (base64) and call POST /api/book,
+ *  - build payload including user fields and individual document fields and call POST /api/book,
  *  - merge server response into formData.
  */
 
@@ -37,11 +37,8 @@ const safeImgSrc = (s) => {
 };
 
 // Parse a time part like "09:30", "9:30 AM", "09:30 PM" into an ISO datetime using day_date.
-// Tries a few fallbacks but is intentionally permissive.
 const parseStartIso = (dayDate, timePart) => {
   if (!dayDate || !timePart) return null;
-  // try common patterns:
-  // 1) if timePart already contains 'T' assume it's an ISO-like string
   try {
     const cleaned = timePart.trim();
     if (cleaned.includes("T")) {
@@ -50,14 +47,11 @@ const parseStartIso = (dayDate, timePart) => {
     }
   } catch (e) { /* ignore */ }
 
-  // 2) Try Date parsing on combined string "YYYY-MM-DD HH:MM AM"
-  // This uses browser Date parsing; works in many environments but not perfect cross-browser.
   try {
     const maybe = new Date(`${dayDate} ${timePart}`);
     if (!Number.isNaN(maybe.getTime())) return maybe.toISOString();
   } catch (e) { /* ignore */ }
 
-  // 3) If timePart is like "HH:MM" without AM/PM, construct "YYYY-MM-DDTHH:MM:00"
   const hhmm = timePart.match(/(\d{1,2}):(\d{2})/);
   if (hhmm) {
     const hh = hhmm[1].padStart(2, "0");
@@ -69,7 +63,6 @@ const parseStartIso = (dayDate, timePart) => {
     } catch (e) { /* ignore */ }
   }
 
-  // nothing parsed
   return null;
 };
 
@@ -114,6 +107,7 @@ export default function ReviewConfirm({ formData = {}, onBack = () => {}, setFor
   // Extract display values (prefer server-side authoritative values if merged in)
   const {
     name,
+    username,
     email,
     day_date,
     time_label,
@@ -135,7 +129,7 @@ export default function ReviewConfirm({ formData = {}, onBack = () => {}, setFor
   const displayOfficerName = officer_name || assigned_agent_username || "To be assigned";
   const displayOfficerId = officer_id || assigned_agent_id || "—";
 
-  // compute image sources
+  // compute image sources (prefer top-level convenience fields, then documents array)
   const frontCandidate =
     document_front_base64 ||
     (Array.isArray(documents) && documents.find(d => d.type === "front")?.base64) ||
@@ -203,22 +197,28 @@ export default function ReviewConfirm({ formData = {}, onBack = () => {}, setFor
         }
       }
 
-      // build documents payload: prefer formData.documents, else top-level base64 fields
-      const docsPayload = [];
-      if (Array.isArray(documents) && documents.length) {
+      // Build individual document fields (prefer top-level convenience fields, then fallback to documents array)
+      let user_document_front_base64 = document_front_base64 || null;
+      let user_document_back_base64 = document_back_base64 || null;
+
+      if ((!user_document_front_base64 || !user_document_back_base64) && Array.isArray(documents) && documents.length) {
         for (const d of documents) {
           if (!d || !d.type) continue;
-          const base64 = d.base64 || d.url || null;
-          if (base64) docsPayload.push({ type: d.type, base64 });
+          const t = (d.type || '').toString().toLowerCase();
+          const b64 = d.base64 || d.url || null;
+          if (!b64) continue;
+
+          if (!user_document_front_base64 && (t === 'front' || t === 'document_front' || t === 'user_document_front')) {
+            user_document_front_base64 = b64;
+          } else if (!user_document_back_base64 && (t === 'back' || t === 'document_back' || t === 'user_document_back')) {
+            user_document_back_base64 = b64;
+          }
         }
-      } else {
-        // fallback top-level fields
-        if (document_front_base64) docsPayload.push({ type: "front", base64: document_front_base64 });
-        if (document_back_base64) docsPayload.push({ type: "back", base64: document_back_base64 });
       }
 
       const payload = {
         user_id,
+        username,
         name,
         email,
         date_of_birth,
@@ -229,7 +229,9 @@ export default function ReviewConfirm({ formData = {}, onBack = () => {}, setFor
         duration_minutes,
         slot_index: slot_index || null,
         day_date,
-        documents: docsPayload
+        // individual document fields (may be null if missing)
+        user_document_front_base64,
+        user_document_back_base64
       };
 
       const base = process.env.REACT_APP_BACKEND_URL || "";
@@ -257,20 +259,16 @@ export default function ReviewConfirm({ formData = {}, onBack = () => {}, setFor
             if (data.assigned_agent_username) merged.assigned_agent_username = data.assigned_agent_username;
             merged.status = "scheduled";
 
-            // returned documents (server may return {id, type, url} or {id, type, base64})
-            if (Array.isArray(data.documents) && data.documents.length) {
-              merged.documents = (data.documents || []).map(d => ({
-                id: d.id || d.document_id || null,
-                type: d.type || d.document_type || null,
-                base64: d.base64 || d.url || null,
-                url: d.url || null
-              }));
+            // server may return user_documents object with individual fields
+            if (data.user_documents && typeof data.user_documents === 'object') {
+              merged.user_documents = {
+                ...(merged.user_documents || {}),
+                ...data.user_documents
+              };
 
-              // update top-level convenience fields
-              const front = merged.documents.find(x => x.type === "front");
-              const back = merged.documents.find(x => x.type === "back");
-              if (front && front.base64) merged.document_front_base64 = front.base64;
-              if (back && back.base64) merged.document_back_base64 = back.base64;
+              // update top-level convenience fields if present
+              if (data.user_documents.user_document_front_base64) merged.document_front_base64 = data.user_documents.user_document_front_base64;
+              if (data.user_documents.user_document_back_base64) merged.document_back_base64 = data.user_documents.user_document_back_base64;
             }
 
             // update localStorage authoritative draft
@@ -330,9 +328,6 @@ export default function ReviewConfirm({ formData = {}, onBack = () => {}, setFor
               <dt>Scheduled Date & Time</dt>
               <dd>{formatDateTime(day_date, time_label)}</dd>
 
-              <dt>Assigned Officer</dt>
-              <dd>{displayOfficerName}</dd>
-
               <dt>Documents</dt>
               <dd>
                 <div className="rc-docs">
@@ -377,7 +372,6 @@ export default function ReviewConfirm({ formData = {}, onBack = () => {}, setFor
             <h3> Appointment Scheduled Successfully!</h3>
             <p>Your video KYC session has been booked for:</p>
             <p><strong>{formatDateTime(day_date, time_label)}</strong></p>
-            <p>Officer: <strong>{displayOfficerName}</strong></p>
             <button onClick={closeModal} className="rc-btn rc-btn--primary">Close</button>
           </div>
         </div>

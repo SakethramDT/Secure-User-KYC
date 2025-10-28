@@ -7,11 +7,14 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useState, useEffect, lazy, Suspense, useCallback } from "react";
-
+import VideoCallScreen from "./components/VideoCall";
+import VideoKYCJoinPage from "./components/PreCallPage";
 // Code-split pages
 const Home = lazy(() => import("./pages/Home"));
 const KYCFlow = lazy(() => import("./pages/KYCFlow"));
 const Login = lazy(() => import("./components/login"));
+// NEW: ConfirmSlot page (adjust path if needed)
+const ConfirmSlot = lazy(() => import("./components/ConfirmSlot"));
 
 /* ----------------------------- Error Boundary ----------------------------- */
 function ErrorBoundary({ children }) {
@@ -137,6 +140,11 @@ function AppInner() {
               </ProtectedRoute>
             }
           />
+
+          {/* NEW ROUTE: UAE Gold VideoKYC page */}
+          <Route path="/confirm-slot/:kyc_id" element={<ConfirmSlot />} />
+          <Route path="/videocall/:room_id/:user_id" element={<VideoKYCJoinPage />}/>
+          <Route path="/videocall" element={<VideoCallScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
