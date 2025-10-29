@@ -34,7 +34,7 @@ export default function ConfirmSlot() {
       setError("");
       try {
         const res = await fetch(
-          `http://164.52.217.141:5000/api/kyc/confirm-slot/${encodeURIComponent(kyc_id)}`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/kyc/confirm-slot/${encodeURIComponent(kyc_id)}`,
           { credentials: "include" }
         );
         if (!res.ok) {
@@ -100,7 +100,7 @@ export default function ConfirmSlot() {
   const postStatusUpdate = async (status) => {
     setError("");
     const res = await fetch(
-      `http://164.52.217.141:5000/api/kyc/confirm-slot/${encodeURIComponent(kyc_id)}`,
+      `${process.env.REACT_APP_BACKEND_URL}/api/kyc/confirm-slot/${encodeURIComponent(kyc_id)}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
