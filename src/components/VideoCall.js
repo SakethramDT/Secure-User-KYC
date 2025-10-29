@@ -15,7 +15,7 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
   const role = roleFromUrl || propRole || "caller";
 
   const roomId = stateRoomId || urlParams.get("roomId") || "kyc-room-1";
-  const userId = stateUserId || urlParams.get("userId") || `u_${Math.floor(Math.random()*10000)}`;
+  const userId = stateUserId || urlParams.get("userId") || `u_${Math.floor(Math.random() * 10000)}`;
 
   const [connectionState, setConnectionState] = useState("connecting");
   const [isMuted, setIsMuted] = useState(false);
@@ -49,7 +49,7 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
       try {
         socketRef.current.removeAllListeners();
         socketRef.current.disconnect();
-      } catch (e) {}
+      } catch (e) { }
       socketRef.current = null;
     }
 
@@ -58,7 +58,7 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
         pcRef.current.ontrack = null;
         pcRef.current.onicecandidate = null;
         pcRef.current.close();
-      } catch (e) {}
+      } catch (e) { }
       pcRef.current = null;
     }
 
@@ -100,121 +100,134 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
 
   // init media, pc and socket
   useEffect(() => {
-  let mounted = true;
-  const pendingCandidates = [];
+    let mounted = true;
+    const pendingCandidates = [];
 
-  const init = async () => {
-    try {
-      setConnectionState("getting_media");
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 640, height: 480 },
-        audio: true,
-      });
-      if (!mounted) return;
-      localStreamRef.current = stream;
-      if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+    const init = async () => {
+      try {
+        setConnectionState("getting_media");
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480 },
+          audio: true,
+        });
+        if (!mounted) return;
+        localStreamRef.current = stream;
+        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
 
-      // Peer connection
-      pcRef.current = new RTCPeerConnection(rtcConfig);
-      stream.getTracks().forEach(track => pcRef.current.addTrack(track, stream));
+        // Peer connection
+        pcRef.current = new RTCPeerConnection(rtcConfig);
+        stream.getTracks().forEach(track => pcRef.current.addTrack(track, stream));
 
-      // Handle remote media
-      pcRef.current.ontrack = event => {
-        const remoteStream = event.streams[0];
-        if (remoteVideoRef.current && remoteStream) {
-          remoteVideoRef.current.srcObject = remoteStream;
-          setConnectionState("connected");
-        }
-      };
-
-      // ICE candidates out
-      pcRef.current.onicecandidate = e => {
-        if (e.candidate && socketRef.current?.connected) {
-          socketRef.current.emit("ice-candidate", { roomId, userId, candidate: e.candidate });
-        }
-      };
-
-      // ICE state monitoring
-      pcRef.current.oniceconnectionstatechange = () => {
-        const s = pcRef.current.iceConnectionState;
-        if (s === "disconnected") setConnectionState("disconnected");
-        if (s === "failed") pcRef.current.restartIce?.();
-      };
-
-      // setup socket
-      socketRef.current = io(BASE_URL, { transports: ["websocket"] });
-
-      socketRef.current.on("connect", () => {
-        socketRef.current.emit("join-room", { roomId, userId, role });
-      });
-
-      socketRef.current.on("joined", () => {
-        // Safe to signal ready only after join confirmation
-        socketRef.current.emit("ready", { roomId, userId });
-        setConnectionState("waiting_for_offer");
-      });
-
-      // Offer from agent side
-      socketRef.current.on("offer", async ({ offer }) => {
-        try {
-          await pcRef.current.setRemoteDescription(new RTCSessionDescription(offer));
-
-          const answer = await pcRef.current.createAnswer();
-          await pcRef.current.setLocalDescription(answer);
-          socketRef.current.emit("answer", { answer, roomId, userId });
-
-          // Drain any pending ICE candidates
-          while (pendingCandidates.length) {
-            const c = pendingCandidates.shift();
-            await pcRef.current.addIceCandidate(c);
+        // Handle remote media
+        pcRef.current.ontrack = event => {
+          const remoteStream = event.streams[0];
+          if (remoteVideoRef.current && remoteStream) {
+            remoteVideoRef.current.srcObject = remoteStream;
+            setConnectionState("connected");
           }
+        };
 
-          setConnectionState("connected");
-        } catch (e) {
-          console.error("Failed to handle offer:", e);
-          setConnectionState("failed");
-        }
-      });
+        // ICE candidates out
+        pcRef.current.onicecandidate = e => {
+          if (e.candidate && socketRef.current?.connected) {
+            socketRef.current.emit("ice-candidate", { roomId, userId, candidate: e.candidate });
+          }
+        };
 
-      socketRef.current.on("answer", async ({ answer }) => {
-        // user never expects answer, ignore silently 
-        console.log("User received unexpected answer — ignoring");
-      });
+        // ICE state monitoring
+        pcRef.current.oniceconnectionstatechange = () => {
+          const s = pcRef.current.iceConnectionState;
+          if (s === "disconnected") setConnectionState("disconnected");
+          if (s === "failed") pcRef.current.restartIce?.();
+        };
 
-      // incoming ICE from remote (agent)
-      socketRef.current.on("ice-candidate", async ({ candidate }) => {
-        if (!candidate) return;
-        const c = new RTCIceCandidate(candidate);
-        if (pcRef.current.remoteDescription) {
-          await pcRef.current.addIceCandidate(c);
-        } else {
-          pendingCandidates.push(c);
-        }
-      });
+        // setup socket
+        socketRef.current = io(BASE_URL, { transports: ["websocket"] });
 
-      socketRef.current.on("call-ended", () => {
-        setConnectionState("closed");
-        cleanup();
-      });
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("join-room", { roomId, userId, role });
+        });
 
-      socketRef.current.on("user-disconnected", () => {
-        setConnectionState("closed");
-        cleanup();
-      });
+        socketRef.current.on("joined", () => {
+          // Safe to signal ready only after join confirmation
+          socketRef.current.emit("ready", { roomId, userId });
+          setConnectionState("waiting_for_offer");
+        });
 
-    } catch (err) {
-      console.error("Init error:", err);
-      setConnectionState("failed");
-    }
-  };
+        // Offer from agent side
+        socketRef.current.on("offer", async ({ offer }) => {
+          try {
+            await pcRef.current.setRemoteDescription(new RTCSessionDescription(offer));
 
-  init();
+            const answer = await pcRef.current.createAnswer();
+            await pcRef.current.setLocalDescription(answer);
+            socketRef.current.emit("answer", { answer, roomId, userId });
 
-  return () => {
-    mounted = false;
-    cleanup();
-  };
-}, [roomId, userId, role]);
+            // Drain any pending ICE candidates
+            while (pendingCandidates.length) {
+              const c = pendingCandidates.shift();
+              await pcRef.current.addIceCandidate(c);
+            }
+
+            setConnectionState("connected");
+          } catch (e) {
+            console.error("Failed to handle offer:", e);
+            setConnectionState("failed");
+          }
+        });
+
+        socketRef.current.on("answer", async ({ answer }) => {
+          // user never expects answer, ignore silently 
+          console.log("User received unexpected answer — ignoring");
+        });
+
+        // incoming ICE from remote (agent)
+        socketRef.current.on("ice-candidate", async ({ candidate }) => {
+          if (!candidate) return;
+          const c = new RTCIceCandidate(candidate);
+          if (pcRef.current.remoteDescription) {
+            await pcRef.current.addIceCandidate(c);
+          } else {
+            pendingCandidates.push(c);
+          }
+        });
+
+
+        // AFTER:
+        socketRef.current.on('call-ended', (data = {}) => {
+          const { roomId: endedRoom, from } = data || {};
+          console.log('call-ended received', { endedRoom, from, raw: data });
+          // friendly UI note
+          setIncomingHint("Agent ended the call — finishing verification...");
+          // cleanup local resources and move to verification/thank-you
+          cleanup();
+          setConnectionState("closed");
+          setStage("verification");
+
+          if (incomingHintTimer.current) clearTimeout(incomingHintTimer.current);
+          incomingHintTimer.current = setTimeout(() => setIncomingHint(""), 2500);
+        });
+
+
+
+        socketRef.current.on("user-disconnected", () => {
+          setConnectionState("closed");
+          cleanup();
+        });
+
+      } catch (err) {
+        console.error("Init error:", err);
+        setConnectionState("failed");
+      }
+    };
+
+    init();
+
+    return () => {
+      mounted = false;
+      cleanup();
+    };
+  }, [roomId, userId, role]);
 
 
   // expose onStatusChange callback if provided
@@ -238,7 +251,7 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
       closed: "Call ended",
       failed: "Connection failed",
     }[connectionState] || "Connecting...";
-    
+
   // UI (keeps the second file's UI)
   return (
     <div className="video-call-container">
@@ -707,13 +720,12 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
             <div className="vc-header-right">
               <div className="vc-status">
                 <div
-                  className={`vc-status-dot ${
-                    connectionState === "connected"
-                      ? "vc-status-connected"
-                      : connectionState === "closed" || connectionState === "failed"
+                  className={`vc-status-dot ${connectionState === "connected"
+                    ? "vc-status-connected"
+                    : connectionState === "closed" || connectionState === "failed"
                       ? "vc-status-disconnected"
                       : "vc-status-connecting"
-                  }`}
+                    }`}
                 />
                 <span className="vc-status-text">{connectionStatusText}</span>
               </div>
