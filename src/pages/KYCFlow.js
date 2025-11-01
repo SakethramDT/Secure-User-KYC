@@ -147,7 +147,7 @@ const KYCFlow = ({ username: initialUsername = "" }) => {
       {/* ✅ KEEPING ORIGINAL HEADER EXACTLY SAME */}
       <header className="kyc-header">
         <div className="logofront">
-          <img src="/uae.png" alt="UAE Gov" />
+          <img src="/UserVideoKyc/uae.png" alt="UAE Gov" />
         </div>
 
         <div className="stepper-header">
@@ -158,7 +158,7 @@ const KYCFlow = ({ username: initialUsername = "" }) => {
         </div>
 
         <div className="logoback">
-          <img src="/long.png" alt="Logo" />
+          <img src="/UserVideoKyc/long.png" alt="Logo" />
         </div>
       </header>
 

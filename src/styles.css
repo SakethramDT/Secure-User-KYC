@@ -122,13 +122,43 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Loading text */
-.loading-indicator p {
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader-spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 
+ .loading-indicator p {
   font-size: 16px;
   font-weight: 500;
   color: #333;
   margin: 0;
-}
+} */
 
 /* header full width (keeps previous full-bleed approach) */
 .kyc-header {

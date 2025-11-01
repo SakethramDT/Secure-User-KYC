@@ -11,7 +11,7 @@ import { Calendar, Clock, User, CheckCircle, X, Shield, Lock } from "lucide-reac
 export default function ConfirmSlot() {
   const { kyc_id } = useParams();
   const navigate = useNavigate();
-
+  //const kyc_id='97451d01-c5d2-4e55-b66e-209dc3416a8a';
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
@@ -155,6 +155,71 @@ export default function ConfirmSlot() {
           <p className="cs-loading">Loading slot details…</p>
         </div>
         <style>{styles}</style>
+      </div>
+    );
+  }
+
+  if (error && !slot && !user) {
+    return (
+      <div className="cs-root">
+        <div className="top-header">
+          <div className="header-content">
+            <div className="brand-section">
+              <div className="brand-logo">
+                <Shield />
+              </div>
+              <div className="brand-info">
+                <h1>VideoKYC Portal</h1>
+                <p>Secure Identity Verification</p>
+              </div>
+            </div>
+            <div className="security-badges">
+              <div className="badge badge-secure">
+                <CheckCircle />
+                <span>Verified Platform</span>
+              </div>
+              <div className="badge badge-encrypted">
+                <Lock />
+                <span>256-bit Encrypted</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <style>{styles}</style>
+
+        <div className="cs-card error-card">
+          <div className="error-content">
+            <div className="error-icon-wrapper">
+              <X size={48} />
+            </div>
+            <h2 className="error-title">Unable to Load Appointment</h2>
+            <p className="error-message">{error}</p>
+            
+            <div className="error-reasons">
+              <p className="error-reasons-title">This could be because:</p>
+              <ul className="error-list">
+                <li>The confirmation link has expired</li>
+                <li>The appointment link is invalid or incorrect</li>
+                <li>The appointment has already been processed</li>
+                <li>The slot has been cancelled or rescheduled</li>
+              </ul>
+            </div>
+
+            <div className="error-actions">
+              <button className="cs-btn cs-btn-primary" onClick={() => navigate("/reschedule")}>
+                Schedule New Appointment
+              </button>
+              <button className="cs-btn cs-btn-light" onClick={closePage}>
+                Close This Page
+              </button>
+            </div>
+
+            <div className="error-help">
+              <p>Need help? Contact support or check your email for the latest appointment details.</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -481,5 +546,174 @@ const styles = `
   /* Ensure content isn't overlapped when header is fixed */
   /* cs-root already uses padding-top based on --header-height */
 
-`;
+  /* ✅ Error Page Styles */
+  .error-card {
+    max-width: 640px;
+    text-align: center;
+  }
 
+  .error-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .error-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .error-icon-wrapper svg {
+    color: #dc2626;
+    stroke-width: 2.5;
+  }
+
+  .error-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .error-message {
+    font-size: 15px;
+    color: #dc2626;
+    font-weight: 600;
+    background: #fef2f2;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid #fee2e2;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .error-reasons {
+    width: 100%;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: left;
+    margin-top: 8px;
+  }
+
+  .error-reasons-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 12px 0;
+  }
+
+  .error-list {
+    margin: 0;
+    padding-left: 20px;
+    list-style: none;
+  }
+
+  .error-list li {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.8;
+    position: relative;
+    padding-left: 8px;
+  }
+
+  .error-list li:before {
+    content: "•";
+    position: absolute;
+    left: -12px;
+    color: #b8872f;
+    font-weight: bold;
+  }
+
+  .error-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .error-help {
+    margin-top: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    width: 100%;
+  }
+
+  .error-help p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Responsive adjustments for error page */
+  @media (max-width: 720px) {
+    .error-title {
+      font-size: 20px;
+    }
+
+    .error-icon-wrapper {
+      width: 70px;
+      height: 70px;
+    }
+
+    .error-icon-wrapper svg {
+      width: 42px;
+      height: 42px;
+    }
+
+    .error-message {
+      font-size: 14px;
+      padding: 10px 16px;
+    }
+
+    .error-reasons {
+      padding: 16px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .error-title {
+      font-size: 18px;
+    }
+
+    .error-icon-wrapper {
+      width: 64px;
+      height: 64px;
+    }
+
+    .error-icon-wrapper svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    .error-message {
+      font-size: 13px;
+      padding: 10px 14px;
+    }
+
+    .error-reasons {
+      padding: 14px;
+    }
+
+    .error-list li {
+      font-size: 13px;
+    }
+
+    .error-help p {
+      font-size: 12px;
+    }
+  }
+
+`;

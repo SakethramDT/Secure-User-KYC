@@ -5,6 +5,7 @@ import { Video, VideoOff, Mic, MicOff, Phone, Shield, User, CreditCard } from "l
 import io from "socket.io-client";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+const SOCKET_URL = process.env.REACT_SOCKET_URL;
 
 const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
   const { state } = useLocation();
@@ -142,8 +143,14 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
         };
 
         // setup socket
-        socketRef.current = io(BASE_URL, { transports: ["websocket"] });
-
+        socketRef.current = io(SOCKET_URL, {
+            path: '/videokyc/socket.io',
+            transports: ['websocket','polling'], // for debugging you can use ['polling','websocket']
+            secure: true
+          });
+        // expose and debugging
+        console.log('[CLIENT] BASE_URL=', BASE_URL, 'socket path=', socketRef.current._opts?.path);
+ 
         socketRef.current.on("connect", () => {
           socketRef.current.emit("join-room", { roomId, userId, role });
         });

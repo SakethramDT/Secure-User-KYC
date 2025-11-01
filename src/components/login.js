@@ -43,7 +43,7 @@ const Login = ({ setLoggedInUser }) => {
       <div className="overlay" />
       <div className="login-card">
         <div className="login-header">
-          <img src="/image.png" alt="Portal Logo" className="login-logo" />
+          <img src="/UserVideoKyc/image.png" alt="Portal Logo" className="login-logo" />
           <h2 className="login-title">KYC User Portal</h2>
           <p className="login-subtitle">Secure Verification Gateway</p>
         </div>

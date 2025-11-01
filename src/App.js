@@ -1,4 +1,5 @@
 import {
+  HashRouter as Router,
   BrowserRouter,
   Routes,
   Route,
@@ -118,7 +119,11 @@ function AppInner() {
   return (
     <>
       <RoutePersistor />
-      <Suspense fallback={<div>Loading…</div>}>
+      <Suspense fallback={
+        <div className="loader-overlay">
+          <div className="loader-spinner"></div>
+        </div>
+      }>
         <Routes>
           <Route
             path="/"
@@ -155,13 +160,13 @@ function AppInner() {
 /* ---------------------------------- App ----------------------------------- */
 /* App only creates the Router; it does NOT call useNavigate itself */
 function App() {
-  const basename = import.meta?.env?.BASE_URL || process.env.PUBLIC_URL || "/";
+  //const basename = "/UserVideoKyc";
   return (
-    <BrowserRouter basename={basename}>
+    <Router>
       <ErrorBoundary>
         <AppInner />
       </ErrorBoundary>
-    </BrowserRouter>
+    </Router>
   );
 }
 

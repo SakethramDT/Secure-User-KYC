@@ -10,7 +10,7 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 import "./PersonalInfo.css";
-
+import CustomCalendarInput from "./CustomCalendar";
 const LABELS = {
   name: "full name",
   email: "email",
@@ -236,17 +236,14 @@ const PersonalInfo = ({ formData, setFormData, onNext, username }) => {
 
         <div className="form-group">
           <label>Date of Birth</label>
-          <div className="input-with-icon">
-            <FaCalendarAlt className="react-icon" />
-            <input
-              name="date_of_birth"
-              type="date"
-              value={formData.date_of_birth || ""}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            />
-          </div>
+          
+          <CustomCalendarInput 
+            value={formData.date_of_birth || ""}
+            onChange={handleChange}   
+            name="date_of_birth"
+            required
+            maxSelectableDate="today" 
+          />
           {errors.date_of_birth && (
             <span className="error-message">{errors.date_of_birth}</span>
           )}
@@ -313,17 +310,17 @@ const PersonalInfo = ({ formData, setFormData, onNext, username }) => {
 
         <div className="form-group">
           <label>ID Issue Date</label>
-          <div className="input-with-icon">
-            <FaCalendarAlt className="react-icon" />
-            <input
+          
+            <CustomCalendarInput
               name="id_issue_date"
               type="date"
               value={formData.id_issue_date || ""}
               onChange={handleChange}
               onBlur={handleBlur}
               required
+              maxSelectableDate="today"   // blocks dates before today
             />
-          </div>
+          
           {errors.id_issue_date && (
             <span className="error-message">{errors.id_issue_date}</span>
           )}
@@ -331,17 +328,18 @@ const PersonalInfo = ({ formData, setFormData, onNext, username }) => {
 
         <div className="form-group">
           <label>ID Expiry Date</label>
-          <div className="input-with-icon">
-            <FaCalendarAlt className="react-icon" />
-            <input
+          
+            <CustomCalendarInput  
+              
               name="id_expiry_date"
               type="date"
               value={formData.id_expiry_date || ""}
               onChange={handleChange}
               onBlur={handleBlur}
               required
+              minSelectableDate="today"
             />
-          </div>
+         
           {errors.id_expiry_date && (
             <span className="error-message">{errors.id_expiry_date}</span>
           )}
