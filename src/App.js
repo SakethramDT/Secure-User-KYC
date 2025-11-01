@@ -7,6 +7,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
 import { useState, useEffect, lazy, Suspense, useCallback } from "react";
 import VideoCallScreen from "./components/VideoCall";
 import VideoKYCJoinPage from "./components/PreCallPage";
@@ -116,9 +117,18 @@ function AppInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  
+
   return (
     <>
       <RoutePersistor />
+      <Toaster
+            toastOptions={{
+              duration: 3000,
+              position: 'top-center',
+              style: { fontWeight: 600 }
+            }}
+          />
       <Suspense fallback={
         <div className="loader-overlay">
           <div className="loader-spinner"></div>
@@ -151,6 +161,7 @@ function AppInner() {
           <Route path="/videocall/:room_id/:user_id" element={<VideoKYCJoinPage />}/>
           <Route path="/videocall" element={<VideoCallScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          
         </Routes>
       </Suspense>
     </>

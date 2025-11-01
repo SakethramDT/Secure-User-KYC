@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { Video, VideoOff, Mic, MicOff, Phone, Shield, User, CreditCard } from "lucide-react";
 import io from "socket.io-client";
+import toast from 'react-hot-toast';
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const SOCKET_URL = process.env.REACT_SOCKET_URL;
@@ -24,6 +25,7 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
   const [incomingHint, setIncomingHint] = useState("");
   const [participants, setParticipants] = useState([{ id: userId, name: `You (${userId})` }]);
   const [stage, setStage] = useState("in-call");
+  const shownToastsRef = useRef(new Set());
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -98,7 +100,7 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
       setIsVideoOff(!track.enabled);
     }
   };
-
+   
   // init media, pc and socket
   useEffect(() => {
     let mounted = true;
@@ -144,17 +146,32 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
 
         // setup socket
         socketRef.current = io(SOCKET_URL, {
-            path: '/videokyc/socket.io',
-            transports: ['websocket','polling'], // for debugging you can use ['polling','websocket']
-            secure: true
-          });
+          path: '/videokyc/socket.io',
+          transports: ['websocket', 'polling'], // for debugging you can use ['polling','websocket']
+          secure: true
+        });
         // expose and debugging
         console.log('[CLIENT] BASE_URL=', BASE_URL, 'socket path=', socketRef.current._opts?.path);
- 
+
         socketRef.current.on("connect", () => {
           socketRef.current.emit("join-room", { roomId, userId, role });
         });
+        socketRef.current?.on('agent-captured', ({ type }) => {
+          if (!type) return;
+          // normalize and only allow the 3 types
+          const key = type === 'face' ? 'face' : type === 'front_card' ? 'front_card' : type === 'back_card' ? 'back_card' : null;
+          if (!key) return;
+          
+          if (shownToastsRef.current.has(key)) return; // avoid immediate repeat
+          shownToastsRef.current.add(key);
+          setTimeout(() => shownToastsRef.current.delete(key), 1000);
+          if (key === 'face') toast.success('Face captured');
+          if (key === 'front_card') toast.success('Front ID captured');
+          if (key === 'back_card') toast.success('Back ID captured');
 
+           
+        });
+ 
         socketRef.current.on("joined", () => {
           // Safe to signal ready only after join confirmation
           socketRef.current.emit("ready", { roomId, userId });
@@ -232,6 +249,8 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
 
     return () => {
       mounted = false;
+      try { socketRef.current?.off('agent-captured'); } catch (e) {}
+      shownToastsRef.current.clear();
       cleanup();
     };
   }, [roomId, userId, role]);
