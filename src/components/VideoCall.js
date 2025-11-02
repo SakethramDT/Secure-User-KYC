@@ -25,6 +25,10 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
   const [incomingHint, setIncomingHint] = useState("");
   const [participants, setParticipants] = useState([{ id: userId, name: `You (${userId})` }]);
   const [stage, setStage] = useState("in-call");
+  const [availableCameras, setAvailableCameras] = useState([]); // [{ deviceId, label }]
+  const [currentCameraId, setCurrentCameraId] = useState(null);
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent || "");
+
   const shownToastsRef = useRef(new Set());
 
   const localVideoRef = useRef(null);
@@ -873,7 +877,7 @@ const VideoCallScreen = ({ role: propRole = "caller", onStatusChange }) => {
             </p>
             <button
               className="kyc-button"
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => (window.location.href = "/")}
             >
               Close
             </button>
